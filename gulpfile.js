@@ -1,6 +1,17 @@
+/*
+for all dependencies in "node_modules" folder:
+$ npm install --save-dev gulp
+$ npm install --save-dev gulp-util
+etc.
+
+for browserify javascript dependencies (then require the libraries in tagline.coffee and template.js):
+$ npm install --save-dev jquery
+$ npm install --save-dev mustache
+*/
 var gulp = require('gulp'),
 	gutil = require('gulp-util'),
 	coffee = require('gulp-coffee'),
+	browserify = require('gulp-browserify'),
 	concat = require('gulp-concat');
 
 
@@ -29,5 +40,6 @@ gulp.task('coffee', function() {
 gulp.task('js', function () {
 	gulp.src(jsSources)
 		.pipe(concat('script.js'))
+		.pipe(browserify())							// browserify adds libraries (jquery, mustache) as dependencies rather than through CDN
 		.pipe(gulp.dest('builds/development/js'))
 });
