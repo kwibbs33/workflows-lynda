@@ -15,6 +15,8 @@ var gulp = require('gulp'),
 	compass = require('gulp-compass'),
 	cleanDest = require('gulp-clean-dest'),
 	connect = require('gulp-connect'),
+	gulpif = require('gulp-if'),
+	uglify = require('gulp-uglify'),
 	concat = require('gulp-concat');
 
 
@@ -70,6 +72,7 @@ gulp.task('js', function () {
 	gulp.src(jsSources)
 		.pipe(concat('script.js'))
 		.pipe(browserify())							// browserify adds libraries (jquery, mustache) as dependencies rather than through CDN
+		.pipe(gulpif(env === 'production', uglify()))	// if production environment, minify js
 		.pipe(gulp.dest(outputDir + '/js'))
 		.pipe(connect.reload())						// live reload html file on change
 });
