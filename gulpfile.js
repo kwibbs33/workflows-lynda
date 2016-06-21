@@ -82,7 +82,8 @@ gulp.task('watch', function () {
 });
 
 
-// one task that runs all functions
-gulp.task('all', ['coffee', 'js', 'compass']);		// $ gulp all
-gulp.task('default', ['coffee', 'js', 'compass']);	// or use 'default' to be run when just calling 'gulp' in terminal
+/* one task that runs all functions */
+//gulp.task('all', ['coffee', 'js', 'compass']);		// $ gulp all
+//gulp.task('default', ['coffee', 'js', 'compass']);	// or use 'default' to be run when just calling 'gulp' in terminal
+gulp.task('default', ['coffee', 'js', 'compass', 'watch']);	// include watch
 
