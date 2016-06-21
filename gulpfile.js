@@ -14,6 +14,7 @@ var gulp = require('gulp'),
 	browserify = require('gulp-browserify'),
 	compass = require('gulp-compass'),
 	cleanDest = require('gulp-clean-dest'),
+	connect = require('gulp-connect'),
 	concat = require('gulp-concat');
 
 
@@ -52,6 +53,7 @@ gulp.task('js', function () {
 		.pipe(concat('script.js'))
 		.pipe(browserify())							// browserify adds libraries (jquery, mustache) as dependencies rather than through CDN
 		.pipe(gulp.dest('builds/development/js'))
+		.pipe(connect.reload())						// live reload html file on change
 });
 
 
@@ -66,6 +68,7 @@ gulp.task('compass', function () {
 		}).on('error', gutil.log))					// log error so gulp doesn't crash on sass error
 		.pipe(gulp.dest('builds/development/css'))
 		.pipe(cleanDest('css'))						// include original line numbers from scss files in css file
+		.pipe(connect.reload())						// live reload html file on change
 });
 
 
@@ -82,8 +85,17 @@ gulp.task('watch', function () {
 });
 
 
+
+// gulp-connect creates a server like mamp (https://www.npmjs.com/package/gulp-connect)
+gulp.task('connect', function () {
+	connect.server({
+		root: 'builds/development',
+		livereload: true				// automatically reloads page - on initial task run below (must also add pipe to above tasks on change)
+	});
+});
+
+
 /* one task that runs all functions */
 //gulp.task('all', ['coffee', 'js', 'compass']);		// $ gulp all
 //gulp.task('default', ['coffee', 'js', 'compass']);	// or use 'default' to be run when just calling 'gulp' in terminal
-gulp.task('default', ['coffee', 'js', 'compass', 'watch']);	// include watch
-
+gulp.task('default', ['coffee', 'js', 'compass', 'connect', 'watch']);
