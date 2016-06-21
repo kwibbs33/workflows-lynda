@@ -32,6 +32,11 @@ var sassSources = [
 ]
 
 
+/* run in terminal:
+$ gulp coffee
+$ gulp js
+*/
+
 // compile coffeescript
 gulp.task('coffee', function() {
 	gulp.src(coffeeSources)							// get source files with gulp.src
@@ -62,3 +67,13 @@ gulp.task('compass', function () {
 		.pipe(gulp.dest('builds/development/css'))
 		.pipe(cleanDest('css'))						// include original line numbers from scss files in css file
 });
+
+
+/* tip: you can make one task depend on another task by naming it second:
+gulp.task('js', ['coffee'], function () {
+ */
+
+// one task that runs all functions
+gulp.task('all', ['coffee', 'js', 'compass']);		// $ gulp all
+gulp.task('default', ['coffee', 'js', 'compass']);	// or use 'default' to be run when just calling 'gulp' in terminal
+
