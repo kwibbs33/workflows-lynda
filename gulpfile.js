@@ -12,6 +12,8 @@ var gulp = require('gulp'),
 	gutil = require('gulp-util'),
 	coffee = require('gulp-coffee'),
 	browserify = require('gulp-browserify'),
+	compass = require('gulp-compass'),
+	cleanDest = require('gulp-clean-dest'),
 	concat = require('gulp-concat');
 
 
@@ -25,6 +27,9 @@ var jsSources = [
 	'components/scripts/tagline.js',
 	'components/scripts/template.js',
 ];
+var sassSources = [
+	'components/sass/style.scss'
+]
 
 
 // compile coffeescript
@@ -42,4 +47,18 @@ gulp.task('js', function () {
 		.pipe(concat('script.js'))
 		.pipe(browserify())							// browserify adds libraries (jquery, mustache) as dependencies rather than through CDN
 		.pipe(gulp.dest('builds/development/js'))
+});
+
+
+// process sass and compass
+gulp.task('compass', function () {
+	gulp.src(sassSources)
+		.pipe(compass({								// https://www.npmjs.com/package/gulp-compass
+			sass: 'components/sass',
+			image: 'builds/development/images',
+			style: 'expanded',
+			comments: true
+		}).on('error', gutil.log))					// log error so gulp doesn't crash on sass error
+		.pipe(gulp.dest('builds/development/css'))
+		.pipe(cleanDest('css'))						// include original line numbers from scss files in css file
 });
