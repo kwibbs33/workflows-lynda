@@ -69,9 +69,18 @@ gulp.task('compass', function () {
 });
 
 
-/* tip: you can make one task depend on another task by naming it second:
+/* tip: you can make a dependent task run before this task by naming it second:
 gulp.task('js', ['coffee'], function () {
  */
+
+
+// monitor files for changes and automatically execute task on change ($ gulp watch) (then CTRL-c to stop watching)
+gulp.task('watch', function () {
+	gulp.watch(coffeeSources, ['coffee']);
+	gulp.watch(jsSources, ['js']);
+	gulp.watch('components/sass/*.scss', ['compass']);	// * any .scss files in folder
+});
+
 
 // one task that runs all functions
 gulp.task('all', ['coffee', 'js', 'compass']);		// $ gulp all
