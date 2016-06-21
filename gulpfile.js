@@ -17,6 +17,7 @@ var gulp = require('gulp'),
 	connect = require('gulp-connect'),
 	gulpif = require('gulp-if'),
 	uglify = require('gulp-uglify'),
+	minifyHTML = require('gulp-minify-html'),
 	concat = require('gulp-concat');
 
 
@@ -103,7 +104,7 @@ gulp.task('watch', function () {
 	gulp.watch(coffeeSources, ['coffee']);
 	gulp.watch(jsSources, ['js']);
 	gulp.watch('components/sass/*.scss', ['compass']);	// * any .scss files in folder
-	gulp.watch(htmlSources, ['html']);
+	gulp.watch('builds/development/*.html', ['html']);
 	gulp.watch(jsonSources, ['json']);
 });
 
@@ -120,7 +121,9 @@ gulp.task('connect', function () {
 
 // live reload any changes to the html and json files
 gulp.task('html', function () {
-	gulp.src(htmlSources)
+	gulp.src('builds/development/*.html')
+		.pipe(gulpif(env === 'production', minifyHTML()))			// if production environment, minify html
+		.pipe(gulpif(env === 'production', gulp.dest(outputDir)))	// if production environment, copy file to production folder
 		.pipe(connect.reload())						// live reload html file on change
 });
 gulp.task('json', function () {
