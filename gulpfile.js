@@ -1,12 +1,12 @@
 /*
 for all dependencies in "node_modules" folder:
-$ npm install --save-dev gulp
-$ npm install --save-dev gulp-util
+<$ npm install --save-dev gulp>
+<$ npm install --save-dev gulp-util>
 etc.
 
 for browserify javascript dependencies (then require the libraries in tagline.coffee and template.js):
-$ npm install --save-dev jquery
-$ npm install --save-dev mustache
+<$ npm install --save-dev jquery>
+<$ npm install --save-dev mustache>
 */
 var gulp = require('gulp'),
 	gutil = require('gulp-util'),
@@ -18,30 +18,42 @@ var gulp = require('gulp'),
 	concat = require('gulp-concat');
 
 
-// files set as an array - is easier to add multiples here than in the task
-var coffeeSources = ['components/coffee/tagline.coffee'];	// individual files or
-//var coffeeSources = ['components/coffee/*.coffee'];		// all files
+/* declare then set variables */
+var env,
+	coffeeSources,
+	jsSources,
+	sassSources,
+	htmlSources,
+	jsonSources,
+	outputDir
 
-var jsSources = [
+// set the environment to 'development'. can change here to 'production' then run <$ gulp>. or <$ NODE_ENV=production gulp>
+env = process.env.NODE_ENV || 'development';
+if (env === 'development') {
+	outputDir = 'builds/development';
+	sassStyle = 'expanded';
+} else {
+	outputDir = 'builds/production';
+	sassStyle = 'compressed';
+}
+
+// files set as an array - is easier to add multiples here than in the task
+coffeeSources = ['components/coffee/tagline.coffee'];	// individual files or "*.coffee" all files
+
+jsSources = [
 	'components/scripts/rclick.js',
 	'components/scripts/pixgrid.js',
 	'components/scripts/tagline.js',
 	'components/scripts/template.js',
 ];
-var sassSources = [
-	'components/sass/style.scss'
-]
-var htmlSources = [
-	'builds/development/*.html'
-]
-var jsonSources = [
-	'builds/development/js/*.json'
-]
+sassSources = ['components/sass/style.scss'];
+htmlSources = [outputDir + '/*.html'];
+jsonSources = [outputDir + '/js/*.json'];
 
 
 /* run task in terminal:
-$ gulp coffee
-$ gulp js
+<$ gulp coffee>
+<$ gulp js>
 */
 
 // compile coffeescript
@@ -58,7 +70,7 @@ gulp.task('js', function () {
 	gulp.src(jsSources)
 		.pipe(concat('script.js'))
 		.pipe(browserify())							// browserify adds libraries (jquery, mustache) as dependencies rather than through CDN
-		.pipe(gulp.dest('builds/development/js'))
+		.pipe(gulp.dest(outputDir + '/js'))
 		.pipe(connect.reload())						// live reload html file on change
 });
 
@@ -68,11 +80,11 @@ gulp.task('compass', function () {
 	gulp.src(sassSources)
 		.pipe(compass({								// https://www.npmjs.com/package/gulp-compass
 			sass: 'components/sass',
-			image: 'builds/development/images',
-			style: 'expanded',
+			image: outputDir + '/images',
+			style: sassStyle,
 			comments: true
 		}).on('error', gutil.log))					// log error so gulp doesn't crash on sass error
-		.pipe(gulp.dest('builds/development/css'))
+		.pipe(gulp.dest(outputDir + '/css'))
 		.pipe(cleanDest('css'))						// include original line numbers from scss files in css file
 		.pipe(connect.reload())						// live reload html file on change
 });
@@ -83,7 +95,7 @@ gulp.task('js', ['coffee'], function () {
  */
 
 
-// monitor files for changes and automatically execute task on change ($ gulp watch) (then CTRL-c to stop watching)
+// monitor files for changes and automatically execute task on change <$ gulp watch> (then CTRL-c to stop watching)
 gulp.task('watch', function () {
 	gulp.watch(coffeeSources, ['coffee']);
 	gulp.watch(jsSources, ['js']);
@@ -97,7 +109,7 @@ gulp.task('watch', function () {
 // gulp-connect creates a server like mamp (https://www.npmjs.com/package/gulp-connect)
 gulp.task('connect', function () {
 	connect.server({
-		root: 'builds/development',
+		root: outputDir,
 		livereload: true				// automatically reloads page - on initial task run below (must also add pipe to above tasks on change)
 	});
 });
@@ -115,6 +127,6 @@ gulp.task('json', function () {
 
 
 /* one task that runs all functions */
-//gulp.task('all', ['coffee', 'js', 'compass']);		// $ gulp all
+//gulp.task('all', ['coffee', 'js', 'compass']);		// <$ gulp all>
 //gulp.task('default', ['coffee', 'js', 'compass']);	// or use 'default' to be run when just calling 'gulp' in terminal
 gulp.task('default', ['html', 'json', 'coffee', 'js', 'compass', 'connect', 'watch']);
