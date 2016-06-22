@@ -18,6 +18,7 @@ var gulp = require('gulp'),
 	gulpif = require('gulp-if'),
 	uglify = require('gulp-uglify'),
 	minifyHTML = require('gulp-minify-html'),
+	jsonminify = require('gulp-jsonminify'),
 	concat = require('gulp-concat');
 
 
@@ -51,7 +52,7 @@ jsSources = [
 ];
 sassSources = ['components/sass/style.scss'];
 htmlSources = [outputDir + '/*.html'];
-jsonSources = [outputDir + '/js/*.json'];
+jsonSources = ['builds/development/js/*.json'];
 
 
 /* run task in terminal:
@@ -128,6 +129,8 @@ gulp.task('html', function () {
 });
 gulp.task('json', function () {
 	gulp.src(jsonSources)
+		.pipe(gulpif(env === 'production', jsonminify()))			// if production environment, minify json
+		.pipe(gulpif(env === 'production', gulp.dest('builds/production/js')))	// if production environment, copy file to production folder
 		.pipe(connect.reload())						// live reload html file on change
 });
 
